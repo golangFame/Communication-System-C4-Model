@@ -1,0 +1,47 @@
+@startuml cms-container
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person_Ext(user,"Fraazo Consumer")
+
+System_Ext(fraazoRD,"Rider Delivery Backend","Fraazo Internal Backend Server","go/gin")
+
+System_Ext(twilio,"Twilio","3rd party Communication API","S/W System")
+
+
+System_Boundary(cms,"Communication System"){
+  Container(admin, "Admin Panel","reactjs")
+  
+  Container(smsService,"SMS Service")
+  Container(voiceService,"Voice Service")
+  Container(emailService,"Email Service")
+
+  Container(logger,"Logger","logrus")
+
+  ' Rel(admin,cms,"Rank top external services","https")
+
+  Rel(smsService,twilio,"Make a sms")
+  Rel(voiceService,twilio,"Make a voicemail")
+  Rel(emailService,twilio,"Make a email notification")
+
+  Rel(fraazoRD,smsService,"Post a sms")
+  Rel(fraazoRD,voiceService,"Post a voicemail")
+  Rel(fraazoRD,emailService,"Post a mail")
+
+  Container(notification, "Notification Service","go")
+  Container(eventBus, "Event Bus","kafka")
+
+  Rel(smsService,eventBus,"SMS req made")
+  Rel(voiceService,eventBus,"Voice req made")
+  Rel(emailService,eventBus,"Mail req made")
+
+  Rel(notification,eventBus,"Read notifications")
+  Rel(fraazoRD,notification,"Read notifications")
+
+  Rel(user,twilio,"Receives SMS")
+  Rel(user,twilio,"Receives Mail")
+  Rel(user,twilio,"Receives Voicemail")
+
+}
+
+@enduml 
