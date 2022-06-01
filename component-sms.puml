@@ -1,0 +1,54 @@
+@startuml cms-components-sms
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+
+!include FONTAWESOME/users.puml
+!include FONTAWESOME/sms.puml
+!include FONTAWESOME/voicemail.puml   
+!include FONTAWESOME/mailchimp.puml
+!include FONTAWESOME/wrench.puml
+!include FONTAWESOME/bell.puml
+!include FONTAWESOME/python.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Component Diagram for CMS - SMS Service
+
+Person(user,"Fraazo Consumer","A customer of fraazo app.")
+
+
+System_Ext(twilio,"Twilio","provides programmable communication tools for making and receiving phone calls, sending and receiving text messages, and performing other communication functions using its web service APIs")
+
+Container(logger,"24/7 Logger","Logrus,Datadog integrated","24/7 S/W logger",$sprite="wrench")
+
+
+Container_Boundary(smsService,"SMS Service"){
+  
+  Component(router,"Intelligent Router","Chooses the provider API from the db based on criteria")
+  Component(messageService,"Messaging Service","go")
+
+  ContainerDb(db, "Provider DB","Stores Provider Definitions","sqllite3")
+
+
+  
+  Rel_Back(router,db,"Here is the provider definition")
+
+  Rel_Back(messageService,router,"Use this provider...")
+
+  Rel_Back(twilio,db,"has definitions")
+
+  Rel(fraazoRider,messageService,"uses")
+
+  Rel(user,messageService,"receives the sms")
+
+
+  ' Rel(messageService,messageClient,"Post created")
+
+  ' Rel(messageClient,eventBus,"Post Created Event","kafka")
+
+}
+
+@enduml

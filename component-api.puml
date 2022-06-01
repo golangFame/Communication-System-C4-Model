@@ -1,0 +1,55 @@
+@startuml cms-components-api
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+
+!include FONTAWESOME/users.puml
+!include FONTAWESOME/sms.puml
+!include FONTAWESOME/voicemail.puml   
+!include FONTAWESOME/mailchimp.puml
+!include FONTAWESOME/wrench.puml
+!include FONTAWESOME/bell.puml
+!include FONTAWESOME/python.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Component Diagram for CMS - Api Application
+
+Container(sms,"SMS", "Manages SMS services",$sprite="sms")
+Container(mail,"Email","Manages Mail services",$sprite="mailchimp")
+Container(voicemail,"Voice-Mail","Manages Voicemail services",$sprite="voicemail")
+
+Container(logger,"24/7 Logger","Logrus,Datadog integrated","24/7 S/W logger",$sprite="wrench")
+
+
+System_Ext(fraazoRD,"Rider Delivery Backend","Fraazo Internal Backend Server","go/gin")
+
+
+Container_Boundary(api, "API Application") {
+    Component(sign, "Sign In Controller", "MVC Rest Controller", "Facilitates Authentication/Authorization for client-apis")
+     Component(security, "Security Component", "go", "Provides authentication")
+    Component(session, "Session Component", "jwt-go", "Handles jwt tokens, sessions & cookies")
+    Component(services,"Services Controller","MVC Rest Controller","integrates core-services-sms,mail...")
+    ComponentDb(db,"Database","sqllite","stores registered Systems,credentials, their accessible services, & logs")
+
+    Rel(sign, session, "uses")
+    Rel(services,session,"uses")
+    Rel(session,security,"uses")
+
+    Rel(fraazoRD,sign,"uses","JSON/HTTPS")
+    Rel(fraazoRD,services,"uses","JSON/HTTPS")
+
+    Rel(services,sms,"uses")
+    Rel(services,mail,"uses")
+    Rel(services,voicemail,"uses")
+
+    Rel(security, db, "Read & write to", "GDBC")
+
+    Rel(sign,logger,"uses")
+    Rel(services,logger,"uses")
+
+}
+
+@enduml
