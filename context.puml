@@ -1,0 +1,51 @@
+@startuml Communication-Sys-Context
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+
+!define ICONURL https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v2.4.0
+
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+
+!include FONTAWESOME/users.puml
+!include FONTAWESOME/sms.puml
+!include FONTAWESOME/voicemail.puml
+!include FONTAWESOME/mailchimp.puml
+
+!include FONTAWESOME/blender_phone.puml
+
+!include ICONURL/common.puml  
+!include ICONURL/devicons/mysql.puml
+!include ICONURL/font-awesome/server.puml
+!include ICONURL/font-awesome-5/database.puml
+
+LAYOUT_WITH_LEGEND()
+ 
+title System Context Diagram for Communication System
+
+Person_Ext(user,"Fraazo Consumer","A customer of fraazo-growth app.",$sprite="users")
+' Person(rider,"Fraazo Rider","A rider of fraazo-delivery rider.")
+
+System(cms, "Communication System","Allows backend engineers to decouple 3rd party services.", $sprite="blender_phone")
+
+System_Ext(fraazoRider,"Fraazo Delivery Rider","Is a fraazo internal server that facilitates delivery of items purchased by customers.",$sprite="server")
+
+' System_Ext(twilio,"Twilio","provides programmable communication tools for making and receiving phone calls, sending and receiving text messages, and performing other communication functions using its web service APIs")
+
+Rel_Neighbor(fraazoRider,cms,"Uses","net/https")
+
+System(sms,"SMS System", "Manages SMS services",$sprite="sms")
+System(mail,"Email System","Manages Mail services",$sprite="mailchimp")
+System(voicemail,"Voice-Mail System","Manages Voicemail services",$sprite="voicemail")
+
+
+Rel_Neighbor(cms,sms,"Send a sms")
+Rel_Neighbor(cms,mail,"Send a mail")
+Rel_Neighbor(cms,voicemail,"Send a voicemail")
+
+Rel_Back(user,sms,"Sends SMS","GPRS")
+Rel_Back(user,voicemail,"Sends Voicemail","GPRS")
+Rel_Back(user,mail,"Send Email","SMTP")
+
+
+@enduml
