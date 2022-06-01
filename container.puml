@@ -1,47 +1,42 @@
-@startuml cms-container
+@startuml sms-container
 
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
-Person_Ext(user,"Fraazo Consumer")
+!define ICONURL https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v2.4.0
 
-System_Ext(fraazoRD,"Rider Delivery Backend","Fraazo Internal Backend Server","go/gin")
+!include ICONURL/common.puml  
+!include ICONURL/devicons/mysql.puml
+!include ICONURL/font-awesome/server.puml
+!include ICONURL/font-awesome-5/database.puml
 
-System_Ext(twilio,"Twilio","3rd party Communication API","S/W System")
+title "Container Diagram for SMS System"
 
-' services
+LAYOUT_WITH_LEGEND()
+' LAYOUT_AS_SKETCH()
+' LAYOUT_TOP_DOWN()
 
-System_Boundary(cms,"Communication System"){
-  Container(admin, "Admin Panel","reactjs")
+System_Ext(twilio,"Twilio","provides programmable communication tools for making and receiving phone calls, sending and receiving text messages, and performing other communication functions using its web service APIs")
+
+System_Ext(fraazoRider,"Fraazo Delivery Rider","Is a fraazo internal server that facilitates delivery of items purchased by customers.",$sprite="server")
+
+Person(user,"Fraazo Consumer","A customer of fraazo app.")
+
+System_Boundary(sms,"SMS System"){
+    
+  Container(router,"Intelligent Router","Chooses the provider API from the db based on criteria")
+  Container(messageService,"Messaging Service","go")
+
+  ContainerDb(db, "Provider DB","Stores Provider Definitions","sqllite3")
   
-  Container(smsService,"SMS Service","go")
-  Container(voiceService,"Voice Service","go")
-  Container(emailService,"Email Service","go")
+  Rel_Back(router,db,"Here is the provider definition")
 
-  Container(logger,"Logger","logrus")
+  Rel_Back(messageService,router,"Use this provider...")
 
-  ' Rel(admin,cms,"Rank top external services","https")
+  Rel_Back(twilio,db,"has definitions")
 
-  Rel(smsService,twilio,"Make a sms")
-  Rel(voiceService,twilio,"Make a voicemail")
-  Rel(emailService,twilio,"Make a email notification")
+  Rel(fraazoRider,messageService,"uses")
 
-  Rel(fraazoRD,smsService,"Post a sms")
-  Rel(fraazoRD,voiceService,"Post a voicemail")
-  Rel(fraazoRD,emailService,"Post a mail")
-
-  Container(notification, "Notification Service","go")
-  Container(eventBus, "Event Bus","kafka")
-
-  Rel(smsService,eventBus,"SMS req made")
-  Rel(voiceService,eventBus,"Voice req made")
-  Rel(emailService,eventBus,"Mail req made")
-
-  Rel(notification,eventBus,"Read notifications")
-  Rel(fraazoRD,notification,"Read notifications")
-
-  Rel(user,twilio,"Receives SMS")
-  Rel(user,twilio,"Receives Mail")
-  Rel(user,twilio,"Receives Voicemail")
+  Rel(user,messageService,"receives the sms")
 
 }
 

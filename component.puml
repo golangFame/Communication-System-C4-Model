@@ -1,13 +1,10 @@
-@startuml cms-container
+@startuml cms-components
 
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
 
 LAYOUT_WITH_LEGEND()
 title Component Diagram for CMS
-
-' Container(admin,"Admin Panel","reactjs")
 
 
 ContainerDb(eventBus,"Event bus","kafka")
@@ -21,6 +18,7 @@ System_Ext(twilio,"Twilio","3rd party Communication API","S/W System")
 
 
 Container_Boundary(smsService,"SMS Service"){
+
 
   ' interface "twilio" as twilioInterface
 
