@@ -18,11 +18,11 @@ LAYOUT_WITH_LEGEND()
 title Component Diagram for CMS - SMS Service
 
 Person(user,"Fraazo Consumer","A customer of fraazo app.")
-
+System_Ext(fraazoRider,"Rider Delivery Backend","Fraazo Internal Backend Server","go/gin")
 
 System_Ext(twilio,"Twilio","provides programmable communication tools for making and receiving phone calls, sending and receiving text messages, and performing other communication functions using its web service APIs")
 
-Container(logger,"24/7 Logger","Logrus,Datadog integrated","24/7 S/W logger",$sprite="wrench")
+Container(backend_api, "API Application", "GO, Docker Container", "Provides access to services via API")
 
 
 Container_Boundary(smsService,"SMS Service"){
@@ -31,8 +31,6 @@ Container_Boundary(smsService,"SMS Service"){
   Component(messageService,"Messaging Service","go")
 
   ContainerDb(db, "Provider DB","Stores Provider Definitions","sqllite3")
-
-
   
   Rel_Back(router,db,"Here is the provider definition")
 
@@ -40,10 +38,11 @@ Container_Boundary(smsService,"SMS Service"){
 
   Rel_Back(twilio,db,"has definitions")
 
-  Rel(fraazoRider,messageService,"uses")
+  Rel(fraazoRider,backend_api,"uses")
 
-  Rel(user,messageService,"receives the sms")
+  Rel(backend_api,messageService,"uses")
 
+  Rel_Back(user,messageService,"sends the sms")
 
   ' Rel(messageService,messageClient,"Post created")
 
